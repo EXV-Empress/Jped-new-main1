@@ -1,38 +1,53 @@
-@extends('layout')
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Booking Management</title>
+</head>
+<body>
 
-@section('content')
-    <h1>Bookings</h1>
-    <a href="{{ route('bookings.create') }}">Create Booking</a>
-    <table>
+    <h1>Manage Bookings</h1>
+
+    @if(session('success'))
+        <p>{{ session('success') }}</p>
+    @endif
+
+    <table border="1">
         <thead>
             <tr>
+
                 <th>Name</th>
                 <th>Email</th>
-                <th>Phone</th>
-                <th>Departure</th>
-                <th>Return</th>
-                <th>Actions</th>
+                <th>Service ID</th>
+                <th>Booking Date</th>
+                <th>Booking Time</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($bookings as $booking)
+            @foreach ($bookings as $booking)
                 <tr>
-                    <td>{{ $booking->full_name }}</td>
+
+                    <td>{{ $booking->name }}</td>
                     <td>{{ $booking->email }}</td>
-                    <td>{{ $booking->phone_number }}</td>
-                    <td>{{ $booking->departure_date_time }}</td>
-                    <td>{{ $booking->return_date_time }}</td>
+                    <td>{{ $booking->booking_time }}</td>
+                    <td>{{ ucfirst($booking->status) }}</td>
                     <td>
-                        <a href="{{ route('bookings.show', $booking->id) }}">View</a>
-                        <a href="{{ route('bookings.edit', $booking->id) }}">Edit</a>
-                        <form action="{{ route('bookings.destroy', $booking->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit">Delete</button>
-                        </form>
+                        @if($booking->status == 'pending')
+                            <form action="{{ route('bookings.approve', $booking->id) }}" method="POST" style="display:inline-block;">
+                                @csrf
+                                <button type="submit">Approve</button>
+                            </form>
+                            <form action="{{ route('bookings.reject', $booking->id) }}" method="POST" style="display:inline-block;">
+                                @csrf
+                                <button type="submit">Reject</button>
+                            </form>
+                        @else
+                            {{ ucfirst($booking->status) }}
+                        @endif
                     </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
-@endsection
+
+</body>
+</html>
